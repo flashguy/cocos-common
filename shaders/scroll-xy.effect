@@ -1,0 +1,66 @@
+CCEffect %{
+  techniques:
+  - name: parallax
+    passes:
+    - vert: parallax-vs:vert
+      frag: parallax-fs:frag
+      properties:
+        u_offset: { value: [0, 0], editor: { type: vector2, displayName: "Offset" } }
+      depthStencilState:
+        depthTest: false
+        depthWrite: false
+      blendState:
+        targets:
+        - blend: true
+          blendSrc: src_alpha
+          blendDst: one_minus_src_alpha
+          blendDstAlpha: one_minus_src_alpha
+      rasterizerState:
+        cullMode: none
+}%
+
+CCProgram parallax-vs %{
+  precision highp float;
+  #include <builtin/uniforms/cc-global>
+  #include <builtin/uniforms/cc-local>
+
+  in vec3 a_position;
+  in vec2 a_texCoord;
+
+  out vec2 v_uv;
+
+  vec4 vert () {
+    vec4 pos = vec4(a_position, 1);
+    pos = cc_matViewProj * cc_matWorld * pos;
+    v_uv = a_texCoord;
+    return pos;
+  }
+}%
+
+CCProgram parallax-fs %{
+  precision highp float;
+
+  in vec2 v_uv;
+  #pragma builtin(local)
+  layout(set = 2, binding = 12) uniform sampler2D cc_spriteTexture;
+
+  uniform Params {
+    vec2 u_offset;
+  };
+
+  vec4 frag () {
+    // Смещаем UV-координаты с учетом offset
+    vec2 uv = v_uv + u_offset;
+    
+    // Используем fract для бесшовного повторения текстуры
+    uv = fract(uv);
+    
+    // Инвертируем Y-координату
+    uv.y = 1.0 - uv.y;
+    
+    // Получаем цвет текстуры
+    vec4 color = texture(cc_spriteTexture, uv);
+    
+    return color;
+  }
+}%
