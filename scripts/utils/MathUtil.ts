@@ -139,4 +139,34 @@ export class MathUtil
 
         return result;
     }
+
+    public static isEven(num:number):boolean
+    {
+        return num % 2 === 0;
+    }
+
+    public static isOdd(num:number):boolean
+    {
+        return num % 2 !== 0;
+    }
+
+    public static wrap(value:number, modulo:number):number
+    {
+        return ((value % modulo) + modulo) % modulo;
+    }
+
+    public static degreesLeft(startDeg:number, endDeg:number):number
+    {
+        return this.wrap(endDeg - startDeg, 360);
+    }
+
+    public static degreesRight(startDeg:number, endDeg:number):number
+    {
+        return this.wrap(startDeg - endDeg, 360);
+    }
+
+    public static degreesApart(startDeg:number, endDeg:number):number
+    {
+        return Math.min(this.degreesLeft(startDeg, endDeg), this.degreesRight(startDeg, endDeg));
+    }
 }
