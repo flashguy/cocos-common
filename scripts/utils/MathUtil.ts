@@ -169,4 +169,33 @@ export class MathUtil
     {
         return Math.min(this.degreesLeft(startDeg, endDeg), this.degreesRight(startDeg, endDeg));
     }
+
+    public static cubeDistance(from:Vec3, to:Vec3):number
+    {
+        return Math.max(Math.abs(from.x - to.x), Math.abs(from.y - to.y), Math.abs(from.z - to.z));
+    }
+
+    public static cubeRound(vec:Vec3):Vec3
+    {
+        let rx = Math.round(vec.x);
+        let ry = Math.round(vec.y);
+        let rz = Math.round(vec.z);
+        
+        const x_diff = Math.abs(rx - vec.x);
+        const y_diff = Math.abs(ry - vec.y);
+        const z_diff = Math.abs(rz - vec.z);
+        
+        if (x_diff > y_diff && x_diff > z_diff)
+            rx = -ry - rz;
+        else if (y_diff > z_diff)
+            ry = -rx - rz;
+        else
+            rz = -rx - ry;
+        
+        vec.x = rx;
+        vec.y = ry;
+        vec.z = rz;
+
+        return vec;
+    }
 }
