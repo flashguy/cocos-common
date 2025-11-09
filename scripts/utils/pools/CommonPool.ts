@@ -144,8 +144,7 @@ export abstract class CommonPool<T> extends Component
     {
         if (this.showPoolStat)
         {
-            console.log("=== Instance ===")
-            console.log("reserved:", this._reserveList.length, "active:", this._activeList.length)
+            console.log(this.node.name, "reserved:", this._reserveList.length, "active:", this._activeList.length)
         }
     }
 }
