@@ -1,6 +1,6 @@
 import { Container } from "./Container";
 
-export type Constructor<T = any> = new (...args: any[]) => T;
+export type Constructor<T = any> = new (...args:any[]) => T;
 export type Token<T = any> = string | symbol | Constructor<T>;
 
 export interface ClassProvider<T = any>
@@ -15,7 +15,7 @@ export interface ValueProvider<T = any>
 
 export interface FactoryProvider<T = any>
 {
-    useFactory:(container: Container) => T;
+    useFactory:(container:Container) => T;
 }
 
 export type Provider<T = any> = ClassProvider<T> | ValueProvider<T> | FactoryProvider<T>;

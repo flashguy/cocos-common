@@ -1,5 +1,4 @@
-import { _decorator, Component, randomRangeInt } from 'cc';
-import { PoolQueueProcessingType } from './PoolQueueProcessingType';
+import { _decorator, Component } from 'cc';
 const { ccclass, property } = _decorator;
 
 /**
@@ -7,19 +6,18 @@ const { ccclass, property } = _decorator;
  * @template T - тип элементов, хранящихся в пуле
  */
 @ccclass('CommonPool')
-export abstract class CommonPool<T> extends Component
+export abstract class CommonPool<T extends object> extends Component
 {
     @property
     protected reservedAtStart:number = 0;
 
-    @property({type:PoolQueueProcessingType})
-    protected queueProcessingType:PoolQueueProcessingType = PoolQueueProcessingType.LIFO;
-
     @property
     protected showPoolStat:boolean = false;
 
-    protected _reserveList:Array<T> = [];
-    protected _activeList:Array<T> = [];
+    protected _reserveMap:Map<number, T> = new Map();
+    protected _activeMap:Map<number, T> = new Map();
+    protected _instanceToId:WeakMap<T, number> = new WeakMap();
+    protected _nextId:number = 1;
 
     onLoad()
     {
@@ -46,7 +44,10 @@ export abstract class CommonPool<T> extends Component
     {
         for (let i = 0; i < this.reservedAtStart; i++)
         {
-            this._reserveList.push(this.createInstance());
+            const instance = this.createInstance();
+            const id = this._nextId++;
+            this._reserveMap.set(id, instance);
+            this._instanceToId.set(instance, id);
         }
 
         this.showStat();
@@ -59,22 +60,23 @@ export abstract class CommonPool<T> extends Component
     public get():T
     {
         let instance:T = null;
+        let instanceId:number = null;
 
-        if (this._reserveList.length == 0)
+        if (this._reserveMap.size === 0)
         {
             instance = this.createInstance();
+            instanceId = this._nextId++;
+            this._instanceToId.set(instance, instanceId);
         }
         else
         {
-            switch (this.queueProcessingType)
-            {
-                case PoolQueueProcessingType.FIFO:   instance = this._reserveList.pop(); break;
-                case PoolQueueProcessingType.LIFO:   instance = this._reserveList.shift(); break;
-                case PoolQueueProcessingType.RANDOM: instance = this._reserveList.splice(randomRangeInt(0, this._reserveList.length), 1)[0]; break;
-            }
+            const firstEntry = this._reserveMap.entries().next().value;
+            instanceId = firstEntry[0];
+            instance = firstEntry[1];
+            this._reserveMap.delete(instanceId);
         }
 
-        this._activeList.push(instance);
+        this._activeMap.set(instanceId, instance);
 
         this.showStat();
         return instance;
@@ -88,12 +90,11 @@ export abstract class CommonPool<T> extends Component
     {
         this.cleanInstance(instance);
 
-        let index:number = this._activeList.indexOf(instance);
-
-        if (index >= 0)
+        const instanceId = this._instanceToId.get(instance);
+        if (instanceId && this._activeMap.has(instanceId))
         {
-            this._activeList.splice(index, 1);
-            this._reserveList.push(instance);
+            this._activeMap.delete(instanceId);
+            this._reserveMap.set(instanceId, instance);
 
             this.showStat();
             return;
@@ -105,13 +106,12 @@ export abstract class CommonPool<T> extends Component
      */
     public returnAll():void
     {
-        while (this._activeList.length > 0)
+        for (const [id, instance] of this._activeMap)
         {
-            let instance:any = this._activeList.pop();
             this.cleanInstance(instance);
-
-            this._reserveList.push(instance);
+            this._reserveMap.set(id, instance);
         }
+        this._activeMap.clear();
 
         this.showStat();
     }
@@ -121,7 +121,7 @@ export abstract class CommonPool<T> extends Component
      */
     public get size():number
     {
-        return this._reserveList.length + this._activeList.length;
+        return this._reserveMap.size + this._activeMap.size;
     }
 
     /**
@@ -129,7 +129,7 @@ export abstract class CommonPool<T> extends Component
      */
     public get sizeReserved():number
     {
-        return this._reserveList.length;
+        return this._reserveMap.size;
     }
 
     /**
@@ -137,14 +137,17 @@ export abstract class CommonPool<T> extends Component
      */
     public get sizeActiv():number
     {
-        return this._activeList.length;
+        return this._activeMap.size;
     }
 
+    /**
+     * Выводит статистику
+     */
     private showStat():void
     {
         if (this.showPoolStat)
         {
-            console.log(this.node.name, "reserved:", this._reserveList.length, "active:", this._activeList.length)
+            console.log(`Pool >${this.node ? this.node.name : (this as any).constructor.name}< reserved: ${this._reserveMap.size}, active: ${this._activeMap.size}`);
         }
     }
 }

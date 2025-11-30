@@ -68,7 +68,7 @@ export class Container
             }
         }
         
-        const instance = dependencies.length > 0 ? new ctor(...dependencies) :new ctor();
+        const instance = dependencies.length > 0 ? new ctor(...dependencies) : new ctor();
         const propDeps = propertyDependencies.get(ctor);
         
         if (propDeps)
