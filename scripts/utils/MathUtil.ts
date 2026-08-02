@@ -44,6 +44,22 @@ export class MathUtil
     }
 
     /**
+     * Преобразует преданный угол в угол от 0 до 360 градусов
+     * @param angle угол который нужно превести к углу от 0 до 360
+     * @returns 
+     */
+    public static normalizeAngleDegrees(angle:number):number
+    {
+        // Приводим к диапазону [0, 360)
+        angle = angle % 360;
+        
+        if (angle < 0)
+            angle += 360;
+        
+        return angle;
+    }
+
+    /**
      * Проверяет вероятность того что событие произошло
      * @param probabilityPercent вероятность события
      * @returns произошло или не произошло событие
