@@ -9,7 +9,7 @@ export abstract class AssetProvider
     protected tableCache:Map<string, TextAsset> = new Map<string, TextAsset>();
     protected jsonCache:Map<string, JsonAsset> = new Map<string, JsonAsset>();
 
-    protected async getOrLoadBundle(bundleID:string):Promise<AssetManager.Bundle>
+    public async getOrLoadBundle(bundleID:string):Promise<AssetManager.Bundle>
     {
         if (this.bundleCache.has(bundleID))
         {
@@ -34,7 +34,7 @@ export abstract class AssetProvider
     }
 
     // *.prefab
-    protected async getOrLoadPrefab(bundleID:string, prefabID:string):Promise<Prefab>
+    public async getOrLoadPrefab(bundleID:string, prefabID:string):Promise<Prefab>
     {
         if (this.prefabCache.has(prefabID))
         {
@@ -61,7 +61,7 @@ export abstract class AssetProvider
     }
 
     // *.tsv
-    protected async getOrLoadTable(bundleID:string, tableID:string):Promise<TextAsset>
+    public async getOrLoadTable(bundleID:string, tableID:string):Promise<TextAsset>
     {
         if (this.tableCache.has(tableID))
         {
@@ -91,7 +91,7 @@ export abstract class AssetProvider
     }
 
     // *.json
-    protected async getOrLoadJson(bundleID:string, jsonID:string):Promise<JsonAsset>
+    public async getOrLoadJson(bundleID:string, jsonID:string):Promise<JsonAsset>
     {
         if (this.jsonCache.has(jsonID))
         {

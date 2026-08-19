@@ -22,14 +22,48 @@ export class Globals
         return instance;
     }
 
-    public static get<T extends object>(ctor: new (...args:any[]) => T):T | undefined
+    // public static get<T extends object>(ctor: new (...args:any[]) => T):T | undefined
+    // {
+    //     return this.instances.get(ctor) as T | undefined;
+    // }
+
+    // public static set<T extends object>(ctor: new (...args:any[]) => T, instance:T):T
+    // {
+    //     this.instances.set(ctor, instance);
+
+    //     return instance;
+    // }
+
+    public static get<T extends object>(ctor: new (...args: any[]) => T): T | undefined;
+    public static get<T extends object>(cls: any): T | undefined;
+    public static get<T extends object>(ctorOrClass: any): T | undefined
     {
-        return this.instances.get(ctor) as T | undefined;
+        // Если передан конструктор или класс
+        if (typeof ctorOrClass === 'function')
+        {
+            return this.instances.get(ctorOrClass) as T | undefined;
+        }
+        else
+        {
+            // Запасной вариант - используем конструктор объекта
+            return this.instances.get(ctorOrClass.constructor || ctorOrClass) as T | undefined;
+        }
     }
 
-    public static set<T extends object>(ctor: new (...args:any[]) => T, instance:T):T
+    public static set<T extends object>(ctor: new (...args: any[]) => T, instance: T): T;
+    public static set<T extends object>(cls: any, instance: T): T;
+    public static set<T extends object>(ctorOrClass: any, instance: T): T
     {
-        this.instances.set(ctor, instance);
+        // Если передан конструктор или класс
+        if (typeof ctorOrClass === 'function')
+        {
+            this.instances.set(ctorOrClass, instance);
+        }
+        else
+        {
+            // Запасной вариант - используем конструктор объекта
+            this.instances.set(ctorOrClass.constructor || ctorOrClass, instance);
+        }
 
         return instance;
     }
