@@ -9,11 +9,14 @@ export class Globals
 {
     private static instances = new Map<Function | string | symbol, object>();
 
+    // Globals.has(key);
     public static has(key:Function | string | symbol):boolean
     {
         return this.instances.has(key);
     }
 
+    // Globals.set(key);
+    // Globals.set<T>(key);
     public static set<T extends object>(key:Function | string | symbol, instance:T):T
     {
         this.instances.set(key, instance);
@@ -21,11 +24,15 @@ export class Globals
         return instance;
     }
 
+    // Globals.get(key);
+    // Globals.get<T>(key);
     public static get<T extends object>(key:Function | string | symbol):T | undefined
     {
         return this.instances.get(key) as T | undefined;
     }
 
+    // Globals.getOrCreate(key);
+    // Globals.getOrCreate<T>(key, constructor);
     public static getOrCreate<T extends object>(key:Function | string | symbol, ctor?: new (...args:any[]) => T):T
     {
         let instance = this.instances.get(key) as T | undefined;
@@ -33,7 +40,7 @@ export class Globals
         if (!instance && ctor)
         {
             instance = new ctor();
-            
+
             this.instances.set(key, instance);
         }
         else if (!instance)
