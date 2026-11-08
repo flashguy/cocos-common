@@ -9,6 +9,7 @@ export abstract class AssetProvider
     protected tableCache:Map<string, TextAsset> = new Map<string, TextAsset>();
     protected jsonCache:Map<string, JsonAsset> = new Map<string, JsonAsset>();
 
+    // bundle
     public async getOrLoadBundle(bundleID:string):Promise<AssetManager.Bundle>
     {
         if (this.bundleCache.has(bundleID))
