@@ -1,3 +1,4 @@
+// https://chat.deepseek.com/a/chat/s/b6fac63a-f38c-48c3-8ba0-c75bfd578336
 import { _decorator, Constructor } from 'cc';
 import { Provider, Token } from './Types';
 const { ccclass } = _decorator;
