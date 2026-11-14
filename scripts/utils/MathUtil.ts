@@ -155,4 +155,96 @@ export class MathUtil
 
         return result;
     }
+
+    /**
+     * Возвращает значение числа ограниченного заданным диапазоном
+     * @param value изначальное число
+     * @param min минимум диапазона
+     * @param max максимум диапазона
+     * @returns число в даданном диапазоне
+     */
+    public static clamp(value: number , min: number , max: number ): number {
+        return Math.min(Math.max(value, min), max);
+    };
+    
+    /**
+     * Метод опрееляет является ли число целым или дробным
+     * @param value число для проверки
+     * @returns true если число целое false если дробное
+     */
+    public static isWholeNumber(value:number):boolean
+    {
+        return value === Math.floor(value);
+    }
+
+    /**
+     * Нормализует угол в промежуток от 0 до 359 (360)
+     * @param angleDeg угол в градусах
+     * @returns возвращает ное значчение угла
+     */
+    public static normalizeAngle(angleDeg:number):number
+    {
+        return ((angleDeg % 360) + 360) % 360;
+    }
+
+    /**
+     * Вычисляет угол поворота ведомого круга относительно ведущего при вращении без проскальзывания. Применимо для имитации шестерёночного зацепления.
+     * @param parentAngle - угол поворота ведущего круга (градусы)
+     * @param parentDiameter - диаметр ведущего круга
+     * @param childDiameter - диаметр ведомого круга
+     * @returns угол поворота ведомого круга (градусы)
+     */
+    public static calculateDrivenRotation(parentAngle:number, parentDiameter:number, childDiameter:number):number
+    {
+        // Проверка на нулевой диаметр
+        if (parentDiameter <= 0 || childDiameter <= 0)
+            throw new Error("Диаметры должны быть положительными числами");
+        
+        return parentAngle * (parentDiameter / childDiameter);
+    }
+
+    /**
+     * Угол в радианах поворота точки относительно другой точки
+     * @param v1 Точка относительно которой ищем угол
+     * @param v2 Точка для которой ищем угол
+     * @returns Угол в радианах
+     */
+    public static getVec2RotationAngleCocos(v1:Vec2, v2:Vec2):number
+    {
+        const direction = v2.subtract(v1);
+        const angleRadians = Math.atan2(direction.y, direction.x);
+
+        return angleRadians;
+    }
+
+    /**
+     * Отбрасывает дробные части до указанного разряда
+     * @param value Число необходимое округлить
+     * @param fractionDigits Количество цифр после запятой. Должно быть в диапазоне от 0 до 20 включительно.
+     * @returns Возвращает число, представляющую число в системе счисления с фиксированной запятой.
+     */
+    public static toFloatFixed(value:number, fractionDigits:number):number
+    {
+        return parseFloat(value.toFixed(fractionDigits));
+    }
+
+    /**
+     * Определяет чётность числа.
+     * @param num число для проверки
+     * @returns true если число чётное и false если не чётное
+     */
+    public static isEven(num:number):boolean
+    {
+        return num % 2 === 0;
+    }
+
+    /**
+     * Определяет не чётность числа.
+     * @param num число для проверки
+     * @returns true если число не чётное и false если чётное
+     */
+    public static isOdd(num:number):boolean
+    {
+        return num % 2 !== 0;
+    }
 }
